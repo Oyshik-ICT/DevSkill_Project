@@ -1,3 +1,4 @@
+import json
 from abc import ABC, abstractclassmethod
 
 class Rules(ABC):
@@ -11,6 +12,12 @@ class School:
             self.record_list = [[], [], []]
 
         def __record(self,personType, info_No):
+            def add_json(no, type):
+                fp = open("data.json")
+                information = json.load(fp)
+                information[no][type].append(info)
+                fp2 = open("data.json", 'w')
+                json.dump(information, fp2, indent=2)
 
             for i in range(info_No):
                 print(personType, i+1)
@@ -34,30 +41,35 @@ class School:
                     Teacher_ID+=1
                     info["ID"] = Teacher_ID
                     self.record_list[1].append(info)
+                    add_json(1, "teacher")
                 elif personType == "Student":
                     global Student_ID
                     Student_ID+=1
                     info["ID"] = Student_ID
                     self.record_list[0].append(info)
+                    add_json(0, "student")
                 else:
                     global HR_ID
                     HR_ID+=1
                     info["ID"] = HR_ID
                     self.record_list[2].append(info)
-    
+                    add_json(2, "hr")
+        
         def total_info(self):
+            return len(self.record_list[0]), len(self.record_list[1]), len(self.record_list[2])
+    
+        def add_record(self):
             while True:
                 personType = input("Enter the person type(Enter 0 if you want to terminate) : ")
                 if personType == '0':
                     break
                 info_no = int(input("Enter total number : "))
                 self.__record(personType, info_no)
-            return len(self.record_list[0]), len(self.record_list[1]), len(self.record_list[2])
 
 class HR(School, Rules):
     def __init__(self):
         super().__init__()
-        self.totalStudent, self.totalTeacher, self.totalHR = self.total_info()
+        self.add_record()
 
     def individualRules(self):
         self.rules = "HR Rules"
